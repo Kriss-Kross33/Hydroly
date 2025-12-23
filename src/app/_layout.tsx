@@ -8,6 +8,7 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import { AchievementsProvider } from "@/contexts/AchievementsContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { FriendsProvider } from "@/contexts/FriendsContext";
+import "@/global.css";
 
 SplashScreen.preventAutoHideAsync();
 
