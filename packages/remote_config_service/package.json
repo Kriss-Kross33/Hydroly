@@ -1,0 +1,10 @@
+{
+  "name": "@hydroly/remote-config-service",
+  "version": "1.0.0",
+  "description": "Internal Remote Config Service package for React Native",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@react-native-firebase/remote-config": "^22.2.0"
+  }
+}
