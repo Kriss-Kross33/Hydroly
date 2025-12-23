@@ -34,8 +34,18 @@ yarn-error.*
 # local env files
 .env*.local
 
+# Android signing (contains sensitive passwords)
+android/app/signing.properties
+
 # typescript
 *.tsbuildinfo
 .vercel
 
 .rork
+# react-native-config codegen
+ios/tmp.xcconfig
+.specstory/**
+.env
+.cursor/**
+.cursorrules
+.vscode/**
