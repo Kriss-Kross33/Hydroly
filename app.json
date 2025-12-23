@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Hydration Tracker App",
-    "slug": "hydration-tracker-app-aikxu3o",
+    "name": "Hydroly",
+    "slug": "hydroly",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "rork-app",
+    "scheme": "hydroly",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -15,14 +15,14 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "app.rork.hydration-tracker-app-aikxu3o"
+      "bundleIdentifier": "com.hydroly.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "app.rork.hydration_tracker_app_aikxu3o",
+      "package": "com.hydroly.app",
       "permissions": [
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.SCHEDULE_EXACT_ALARM"
@@ -33,25 +33,23 @@
     },
     "plugins": [
       [
-        "expo-router",
-        {
-          "origin": "https://rork.com/"
-        }
+        "expo-router"
       ],
       "expo-font",
       "expo-web-browser",
       [
         "expo-notifications",
         {
-          "icon": "./local/assets/notification_icon.png",
           "color": "#ffffff",
           "defaultChannel": "default",
           "sounds": [
-            "./local/assets/notification_sound.wav"
+            "./assets/sounds/notification_sound.caf",
+            "./assets/sounds/notification_alert.wav"
           ],
           "enableBackgroundRemoteNotifications": false
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

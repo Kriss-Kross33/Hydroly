@@ -1,0 +1,13 @@
+{
+  "name": "@hydroly/realm-repository",
+  "version": "1.0.0",
+  "description": "Realm Repository package for React Native",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@realm/babel-plugin": "^0.2.0",
+    "@realm/react": "^0.20.0",
+    "realm": "^20.2.0",
+    "@hydroly/local-storage-api": "file:../local-storage-api"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@hydroly/local-storage-api",
+  "version": "1.0.0",
+  "description": "Local Storage API package for React Native",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "expo-build-properties": "^0.14.6"
+  }
+}
