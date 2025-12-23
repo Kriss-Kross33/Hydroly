@@ -1,0 +1,10 @@
+{
+  "name": "@hydroly/crashlytics",
+  "version": "1.0.0",
+  "description": "Crashlytics package for React Native",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "@react-native-firebase/crashlytics": "^22.2.1"
+  }
+}
