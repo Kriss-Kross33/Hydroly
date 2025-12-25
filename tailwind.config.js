@@ -42,6 +42,80 @@ module.exports = {
     },
     extend: {
       colors: {
+        // Primary colors - Sky blue (main brand color)
+        primary: {
+          50: "#F0F9FF",
+          100: "#E0F2FE",
+          200: "#BAE6FD",
+          300: "#7DD3FC",
+          400: "#38BDF8",
+          500: "#0EA5E9", // Main primary color
+          600: "#0284C7",
+          700: "#0369A1",
+          800: "#075985",
+          900: "#0C4A6E",
+        },
+        // Secondary colors - Violet/Purple
+        secondary: {
+          50: "#F5F3FF",
+          100: "#EDE9FE",
+          200: "#DDD6FE",
+          300: "#C4B5FD",
+          400: "#A78BFA",
+          500: "#8B5CF6", // Main secondary color
+          600: "#7C3AED",
+          700: "#6D28D9",
+          800: "#5B21B6",
+          900: "#4C1D95",
+        },
+        // Success colors - Emerald/Green
+        success: {
+          50: "#ECFDF5",
+          100: "#D1FAE5",
+          200: "#A7F3D0",
+          300: "#6EE7B7",
+          400: "#34D399",
+          500: "#10B981", // Main success color
+          600: "#059669",
+          700: "#047857",
+          800: "#065F46",
+          900: "#064E3B",
+        },
+        // Warning colors - Amber/Orange
+        warning: {
+          50: "#FFFBEB",
+          100: "#FEF3C7",
+          200: "#FDE68A",
+          300: "#FCD34D",
+          400: "#FBBF24",
+          500: "#F59E0B", // Main warning color
+          600: "#D97706",
+          700: "#B45309",
+          800: "#92400E",
+          900: "#78350F",
+        },
+        // Text colors
+        text: {
+          primary: "#0C4A6E", // Dark blue for headings
+          secondary: "#475569", // Slate-600 for body text
+          muted: "#64748B", // Slate-500 for secondary text
+          disabled: "#94A3B8", // Slate-400 for disabled states
+          inverse: "#FFFFFF", // White text for dark backgrounds
+        },
+        // Background colors
+        background: {
+          primary: "#FFFFFF", // White
+          secondary: "#F8FAFC", // Slate-50
+          tertiary: "#F1F5F9", // Slate-100
+          accent: "#F0F9FF", // Sky-50
+        },
+        // Border colors
+        border: {
+          light: "#E0F2FE", // Sky-100
+          default: "#CBD5E1", // Slate-300
+          dark: "#94A3B8", // Slate-400
+        },
+        // Legacy/Utility colors
         "auth-subtitle": "#666666",
       },
       spacing: {
