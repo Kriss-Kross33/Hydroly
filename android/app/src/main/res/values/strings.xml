@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Hydration Tracker App</string>
+    <string name="StallionProjectId">YOUR_PROJECT_ID</string>
+    <string name="StallionAppToken">YOUR_APP_TOKEN</string>
+</resources>

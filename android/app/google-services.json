@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "915892443798",
+    "project_id": "hydroly-ed1dc",
+    "storage_bucket": "hydroly-ed1dc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:915892443798:android:bbc929c013454c5d5e80b7",
+        "android_client_info": {
+          "package_name": "com.hydroly.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "915892443798-gr2sntcopp0784q4v37antp3cap3akdv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hydroly.app",
+            "certificate_hash": "1a5c651980d2f49e3a46537cc077bbedecf27787"
+          }
+        },
+        {
+          "client_id": "915892443798-2llu3fed8t3tb1q9e3pcug9m8dvj32rk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAewW27DxRXT6090JMSwtTz3oCyiXI9XLo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "915892443798-2llu3fed8t3tb1q9e3pcug9m8dvj32rk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "915892443798-ubpjefq3bpaa43j4bsk1rf7t33ds9dp6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hydroly.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
