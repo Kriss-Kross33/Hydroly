@@ -268,6 +268,7 @@ class RevenueCatService {
           // Retry once - sometimes the error is transient
           try {
             customerInfo = await Purchases.getCustomerInfo();
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (retryError) {
             // If retry fails, return default status
             if (this.debugMode) {
