@@ -10,8 +10,6 @@ web-build/
 expo-env.d.ts
 
 # Native
-ios/
-android/
 *.orig.*
 *.jks
 *.p8
@@ -49,3 +47,5 @@ ios/tmp.xcconfig
 .cursor/**
 .cursorrules
 .vscode/**
+.env.*
+*.jks

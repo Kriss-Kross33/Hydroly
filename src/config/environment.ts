@@ -22,19 +22,19 @@ const getEnvironment = (): "development" | "staging" | "production" => {
 const environments = {
   development: {
     API_BASE_URL: Config.API_BASE_URL,
-    APP_NAME: "Farmslate (Dev)",
+    APP_NAME: "Hydroly (Dev)",
     ENVIRONMENT: "development",
     DEBUG_MODE: true,
   },
   staging: {
     API_BASE_URL: Config.API_BASE_URL,
-    APP_NAME: "Farmslate (Staging)",
+    APP_NAME: "Hydroly (Staging)",
     ENVIRONMENT: "staging",
     DEBUG_MODE: false,
   },
   production: {
     API_BASE_URL: Config.API_BASE_URL,
-    APP_NAME: "Farmslate",
+    APP_NAME: "Hydroly",
     ENVIRONMENT: "production",
     DEBUG_MODE: false,
   },

@@ -1,13 +1,21 @@
-import createContextHook from '@nkzw/create-context-hook';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { useState, useEffect, useMemo } from 'react';
-import { WaterIntake, DayRecord, DailyGoal, MonthlyReport, YearlyReport } from '@/types/water';
-import { BeverageType, HYDRATION_COEFFICIENTS } from '@/types/beverage';
+import createContextHook from "@nkzw/create-context-hook";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useState, useEffect, useMemo } from "react";
+import {
+  WaterIntake,
+  DayRecord,
+  DailyGoal,
+  MonthlyReport,
+  YearlyReport,
+} from "@/types/water";
+import { BeverageType, HYDRATION_COEFFICIENTS } from "@/types/beverage";
+import { getHydrationDateKeyFromDate } from "@/src/utils/dayBoundary";
+import { useSettings } from "./SettingsContext";
 
-const STORAGE_KEY = '@water_tracker_data';
-const GOAL_STORAGE_KEY = '@water_tracker_goal';
-const ONBOARDING_STORAGE_KEY = '@water_tracker_onboarding';
+const STORAGE_KEY = "@water_tracker_data";
+const GOAL_STORAGE_KEY = "@water_tracker_goal";
+const ONBOARDING_STORAGE_KEY = "@water_tracker_onboarding";
 
 interface StorageData {
   records: Record<string, DayRecord>;
@@ -15,20 +23,32 @@ interface StorageData {
 
 const DEFAULT_GOAL: DailyGoal = {
   goal: 2500,
-  unit: 'ml',
+  unit: "ml",
 };
 
-function getDateKey(date: Date = new Date()): string {
-  return date.toISOString().split('T')[0];
+/**
+ * Get hydration date key for a given date
+ * Uses day boundary service to respect user's startOfDayTime setting
+ */
+function getDateKey(
+  date: Date = new Date(),
+  startOfDayTime: string = "06:00"
+): string {
+  return getHydrationDateKeyFromDate(date, startOfDayTime);
 }
 
 export const [WaterProvider, useWater] = createContextHook(() => {
   const [records, setRecords] = useState<Record<string, DayRecord>>({});
   const [dailyGoal, setDailyGoal] = useState<DailyGoal>(DEFAULT_GOAL);
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(false);
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] =
+    useState<boolean>(false);
+
+  // Get startOfDayTime from settings (SettingsProvider must be a parent)
+  const { settings } = useSettings();
+  const startOfDayTime = settings.startOfDayTime || "06:00";
 
   const dataQuery = useQuery({
-    queryKey: ['waterData'],
+    queryKey: ["waterData"],
     queryFn: async () => {
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       return stored ? (JSON.parse(stored) as StorageData) : { records: {} };
@@ -36,7 +56,7 @@ export const [WaterProvider, useWater] = createContextHook(() => {
   });
 
   const goalQuery = useQuery({
-    queryKey: ['dailyGoal'],
+    queryKey: ["dailyGoal"],
     queryFn: async () => {
       const stored = await AsyncStorage.getItem(GOAL_STORAGE_KEY);
       return stored ? (JSON.parse(stored) as DailyGoal) : DEFAULT_GOAL;
@@ -44,10 +64,10 @@ export const [WaterProvider, useWater] = createContextHook(() => {
   });
 
   const onboardingQuery = useQuery({
-    queryKey: ['onboarding'],
+    queryKey: ["onboarding"],
     queryFn: async () => {
       const stored = await AsyncStorage.getItem(ONBOARDING_STORAGE_KEY);
-      return stored === 'true';
+      return stored === "true";
     },
   });
 
@@ -83,8 +103,8 @@ export const [WaterProvider, useWater] = createContextHook(() => {
     }
   }, [onboardingQuery.data]);
 
-  const addWater = (amount: number, beverageType: BeverageType = 'water') => {
-    const dateKey = getDateKey();
+  const addWater = (amount: number, beverageType: BeverageType = "water") => {
+    const dateKey = getDateKey(new Date(), startOfDayTime);
     const timestamp = Date.now();
     const coefficient = HYDRATION_COEFFICIENTS[beverageType] || 1.0;
     const netHydration = amount * coefficient;
@@ -128,16 +148,17 @@ export const [WaterProvider, useWater] = createContextHook(() => {
   };
 
   const removeWater = (entryId: string) => {
-    const dateKey = getDateKey();
+    const dateKey = getDateKey(new Date(), startOfDayTime);
     const existingRecord = records[dateKey];
-    
+
     if (!existingRecord) return;
 
     const entry = existingRecord.entries.find((e) => e.id === entryId);
     if (!entry) return;
 
     const newTotal = existingRecord.total - entry.amount;
-    const newNetHydration = existingRecord.netHydration - (entry.netHydration || entry.amount);
+    const newNetHydration =
+      existingRecord.netHydration - (entry.netHydration || entry.amount);
 
     const updatedRecord: DayRecord = {
       ...existingRecord,
@@ -163,7 +184,7 @@ export const [WaterProvider, useWater] = createContextHook(() => {
   };
 
   const getTodayRecord = (): DayRecord => {
-    const dateKey = getDateKey();
+    const dateKey = getDateKey(new Date(), startOfDayTime);
     return (
       records[dateKey] || {
         date: dateKey,
@@ -177,7 +198,7 @@ export const [WaterProvider, useWater] = createContextHook(() => {
   };
 
   const getRecordByDate = (date: Date): DayRecord | null => {
-    const dateKey = getDateKey(date);
+    const dateKey = getDateKey(date, startOfDayTime);
     return records[dateKey] || null;
   };
 
@@ -186,13 +207,15 @@ export const [WaterProvider, useWater] = createContextHook(() => {
   };
 
   const completeOnboarding = async () => {
-    await AsyncStorage.setItem(ONBOARDING_STORAGE_KEY, 'true');
+    await AsyncStorage.setItem(ONBOARDING_STORAGE_KEY, "true");
     setHasCompletedOnboarding(true);
   };
 
   const getMonthlyReport = (year: number, month: number): MonthlyReport => {
-    const monthKey = `${year}-${String(month).padStart(2, '0')}`;
-    const monthRecords = Object.values(records).filter(r => r.date.startsWith(monthKey));
+    const monthKey = `${year}-${String(month).padStart(2, "0")}`;
+    const monthRecords = Object.values(records).filter((r) =>
+      r.date.startsWith(monthKey)
+    );
 
     if (monthRecords.length === 0) {
       return {
@@ -208,21 +231,26 @@ export const [WaterProvider, useWater] = createContextHook(() => {
       };
     }
 
-    const totalHydration = monthRecords.reduce((sum, r) => sum + r.netHydration, 0);
-    const goalsMet = monthRecords.filter(r => r.goalAchieved).length;
-    const bestDay = Math.max(...monthRecords.map(r => r.netHydration));
-    const worstDay = Math.min(...monthRecords.map(r => r.netHydration));
+    const totalHydration = monthRecords.reduce(
+      (sum, r) => sum + r.netHydration,
+      0
+    );
+    const goalsMet = monthRecords.filter((r) => r.goalAchieved).length;
+    const bestDay = Math.max(...monthRecords.map((r) => r.netHydration));
+    const worstDay = Math.min(...monthRecords.map((r) => r.netHydration));
 
     let longestStreak = 0;
     let currentStreak = 0;
-    monthRecords.sort((a, b) => a.date.localeCompare(b.date)).forEach(record => {
-      if (record.goalAchieved) {
-        currentStreak++;
-        longestStreak = Math.max(longestStreak, currentStreak);
-      } else {
-        currentStreak = 0;
-      }
-    });
+    monthRecords
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .forEach((record) => {
+        if (record.goalAchieved) {
+          currentStreak++;
+          longestStreak = Math.max(longestStreak, currentStreak);
+        } else {
+          currentStreak = 0;
+        }
+      });
 
     return {
       month: monthKey,
@@ -238,7 +266,9 @@ export const [WaterProvider, useWater] = createContextHook(() => {
   };
 
   const getYearlyReport = (year: number): YearlyReport => {
-    const yearRecords = Object.values(records).filter(r => r.date.startsWith(String(year)));
+    const yearRecords = Object.values(records).filter((r) =>
+      r.date.startsWith(String(year))
+    );
 
     if (yearRecords.length === 0) {
       return {
@@ -248,7 +278,7 @@ export const [WaterProvider, useWater] = createContextHook(() => {
         goalsMet: 0,
         totalDays: 0,
         longestStreak: 0,
-        bestMonth: '',
+        bestMonth: "",
         monthlyBreakdown: [],
         consistencyScore: 0,
       };
@@ -262,23 +292,31 @@ export const [WaterProvider, useWater] = createContextHook(() => {
       }
     }
 
-    const bestMonth = monthlyBreakdown.reduce((best, current) => 
-      current.consistencyScore > best.consistencyScore ? current : best
-    , monthlyBreakdown[0])?.month || '';
+    const bestMonth =
+      monthlyBreakdown.reduce(
+        (best, current) =>
+          current.consistencyScore > best.consistencyScore ? current : best,
+        monthlyBreakdown[0]
+      )?.month || "";
 
-    const totalHydration = yearRecords.reduce((sum, r) => sum + r.netHydration, 0);
-    const goalsMet = yearRecords.filter(r => r.goalAchieved).length;
+    const totalHydration = yearRecords.reduce(
+      (sum, r) => sum + r.netHydration,
+      0
+    );
+    const goalsMet = yearRecords.filter((r) => r.goalAchieved).length;
 
     let longestStreak = 0;
     let currentStreak = 0;
-    yearRecords.sort((a, b) => a.date.localeCompare(b.date)).forEach(record => {
-      if (record.goalAchieved) {
-        currentStreak++;
-        longestStreak = Math.max(longestStreak, currentStreak);
-      } else {
-        currentStreak = 0;
-      }
-    });
+    yearRecords
+      .sort((a, b) => a.date.localeCompare(b.date))
+      .forEach((record) => {
+        if (record.goalAchieved) {
+          currentStreak++;
+          longestStreak = Math.max(longestStreak, currentStreak);
+        } else {
+          currentStreak = 0;
+        }
+      });
 
     return {
       year,
@@ -306,12 +344,15 @@ export const [WaterProvider, useWater] = createContextHook(() => {
     getYearlyReport,
     hasCompletedOnboarding,
     completeOnboarding,
-    isLoading: dataQuery.isLoading || goalQuery.isLoading || onboardingQuery.isLoading,
+    isLoading:
+      dataQuery.isLoading || goalQuery.isLoading || onboardingQuery.isLoading,
   };
 });
 
 export function useWeeklyStats() {
   const { records, dailyGoal } = useWater();
+  const { settings } = useSettings();
+  const startOfDayTime = settings.startOfDayTime || "06:00";
 
   return useMemo(() => {
     const today = new Date();
@@ -320,12 +361,12 @@ export function useWeeklyStats() {
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
-      const dateKey = getDateKey(date);
+      const dateKey = getDateKey(date, startOfDayTime);
       const record = records[dateKey];
 
       weekData.push({
         date: dateKey,
-        dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+        dayName: date.toLocaleDateString("en-US", { weekday: "short" }),
         total: record?.netHydration || 0,
         goal: dailyGoal.goal,
         percentage: record ? (record.netHydration / dailyGoal.goal) * 100 : 0,
@@ -335,7 +376,9 @@ export function useWeeklyStats() {
     const weekTotal = weekData.reduce((sum, day) => sum + day.total, 0);
     const weekGoal = dailyGoal.goal * 7;
     const averageDaily = weekTotal / 7;
-    const daysCompleted = weekData.filter((day) => day.total >= dailyGoal.goal).length;
+    const daysCompleted = weekData.filter(
+      (day) => day.total >= dailyGoal.goal
+    ).length;
 
     return {
       weekData,
@@ -345,5 +388,5 @@ export function useWeeklyStats() {
       daysCompleted,
       weekPercentage: (weekTotal / weekGoal) * 100,
     };
-  }, [records, dailyGoal]);
+  }, [records, dailyGoal, startOfDayTime]);
 }

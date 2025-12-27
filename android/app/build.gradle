@@ -116,7 +116,7 @@ android {
         applicationId 'com.hydroly.app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
+        versionCode 1
         versionName "1.0.0"
         
         // React Native release channel for new architecture (used in MainApplication.kt)
