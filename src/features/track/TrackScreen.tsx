@@ -313,8 +313,8 @@ export default function HomeScreen() {
               </Text>
             </View>
             {isAtRisk && (
-              <Text className="text-xs text-red-600 font-semibold">
-                ⚠️ Your streak is at risk! Log water today to keep it going.
+              <Text className="text-xs text-orange-700 font-semibold">
+                💧 Keep your streak going
               </Text>
             )}
             {streakMilestones.next && !isAtRisk && (
