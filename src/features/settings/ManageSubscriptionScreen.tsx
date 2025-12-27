@@ -10,7 +10,6 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../../../RootStack";
-import { useSubscription } from "@/contexts/SubscriptionContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
   X,
@@ -26,7 +25,10 @@ import {
 import { useState, useEffect } from "react";
 import { revenueCatService } from "@hydroly/revenuecat-service";
 import { CustomerInfo } from "react-native-purchases";
-import { SUBSCRIPTION_PLANS } from "@/contexts/SubscriptionContext";
+import {
+  SUBSCRIPTION_PLANS,
+  useSubscription,
+} from "@/contexts/SubscriptionContext";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
