@@ -6,6 +6,13 @@
  * - Supports Pro and Pro Plus tiers
  * - Handles subscription restoration
  * - Manages customer attributes
+ *
+ * NOTE: Test Store Error (Android)
+ * When using test store API keys on Android, you may see this error in logs:
+ * "Error deserializing subscription information... test_store"
+ * This is a known RevenueCat Android SDK issue and is harmless in development.
+ * It does not affect functionality - subscriptions still work correctly.
+ * This error will NOT appear in production with real store API keys.
  */
 
 import Purchases, {
@@ -230,7 +237,10 @@ class RevenueCatService {
         try {
           return await Purchases.getCustomerInfo();
         } catch (retryError) {
-          console.error("[RevenueCat] ❌ Failed to get customer info:", retryError);
+          console.error(
+            "[RevenueCat] ❌ Failed to get customer info:",
+            retryError
+          );
           throw retryError;
         }
       }
@@ -258,6 +268,7 @@ class RevenueCatService {
           // Retry once - sometimes the error is transient
           try {
             customerInfo = await Purchases.getCustomerInfo();
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (retryError) {
             // If retry fails, return default status
             if (this.debugMode) {

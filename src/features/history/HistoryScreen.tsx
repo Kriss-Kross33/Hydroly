@@ -94,8 +94,8 @@ export default function HistoryScreen() {
               {display.current}
             </Text>
             {isAtRisk && (
-              <Text className="text-xs text-red-600 font-semibold mt-1">
-                At Risk!
+              <Text className="text-xs text-orange-700 font-semibold mt-1">
+                💧 Keep your streak going
               </Text>
             )}
           </View>

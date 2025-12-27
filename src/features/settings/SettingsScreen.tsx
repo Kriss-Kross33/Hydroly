@@ -1,5 +1,4 @@
 import {
-  StyleSheet,
   Text,
   View,
   ScrollView,
@@ -98,20 +97,22 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background-accent" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-sky-50" edges={["top"]}>
       <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.content}
+        className="flex-1"
+        contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
       >
         {!isPremium && (
           <Pressable
-            style={styles.premiumCard}
+            className="flex-row items-center gap-4 bg-amber-100 rounded-2xl p-5 mb-6 shadow-sm"
             onPress={() => navigation.navigate("Paywall")}
           >
             <Crown size={32} color="#F59E0B" fill="#F59E0B" />
-            <View style={styles.premiumInfo}>
-              <Text style={styles.premiumTitle}>Upgrade to Pro</Text>
-              <Text style={styles.premiumSubtitle}>
+            <View className="flex-1">
+              <Text className="text-lg font-bold text-amber-900 mb-1">
+                Upgrade to Pro
+              </Text>
+              <Text className="text-sm text-amber-800">
                 Unlock smart hydration engine, advanced reports, and more
               </Text>
             </View>
@@ -119,13 +120,13 @@ export default function SettingsScreen() {
         )}
 
         {isPremium && (
-          <View style={styles.premiumActiveCard}>
+          <View className="flex-row items-center gap-4 bg-emerald-100 rounded-2xl p-5 mb-6 shadow-sm">
             <Crown size={32} color="#F59E0B" fill="#F59E0B" />
-            <View style={styles.premiumInfo}>
-              <Text style={styles.premiumTitle}>
+            <View className="flex-1">
+              <Text className="text-lg font-bold text-emerald-900 mb-1">
                 {subscription.tier === "pro" ? "Pro" : "Pro Plus"} Member
               </Text>
-              <Text style={styles.premiumSubtitle}>
+              <Text className="text-sm text-emerald-800">
                 {isOnTrial && getTrialDaysRemaining() !== null
                   ? `Trial: ${getTrialDaysRemaining()} days remaining`
                   : subscription.period === "lifetime"
@@ -139,22 +140,24 @@ export default function SettingsScreen() {
         {/* Login Section - Optional, value-driven */}
         <LoginSection />
 
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
+        <View className="mb-6">
+          <View className="flex-row items-center gap-2 mb-3">
             <User size={20} color="#0EA5E9" />
-            <Text style={styles.sectionTitle}>Profile</Text>
+            <Text className="text-lg font-bold text-slate-800">Profile</Text>
             {profileCompletion < 100 && (
-              <Text style={{ fontSize: 12, color: "#64748B", marginLeft: 8 }}>
+              <Text className="text-xs text-slate-500 ml-2">
                 {profileCompletion}% complete
               </Text>
             )}
           </View>
 
-          <View style={styles.settingCard}>
-            <View style={styles.settingRow}>
-              <Text style={styles.settingLabel}>Age</Text>
+          <View className="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+              <Text className="text-base font-semibold text-slate-800">
+                Age
+              </Text>
               <TextInput
-                style={styles.input}
+                className="bg-slate-100 rounded-lg px-3 py-2 text-base font-semibold text-slate-800 min-w-[80px] text-right"
                 value={String(profile.age)}
                 onChangeText={(value) => {
                   const age = parseInt(value);
@@ -167,12 +170,14 @@ export default function SettingsScreen() {
               />
             </View>
 
-            <View style={styles.divider} />
+            <View className="h-px bg-sky-100 mx-4" />
 
-            <View style={styles.settingRow}>
-              <Text style={styles.settingLabel}>Weight (kg)</Text>
+            <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+              <Text className="text-base font-semibold text-slate-800">
+                Weight (kg)
+              </Text>
               <TextInput
-                style={styles.input}
+                className="bg-slate-100 rounded-lg px-3 py-2 text-base font-semibold text-slate-800 min-w-[80px] text-right"
                 value={String(profile.weight)}
                 onChangeText={(value) => {
                   const weight = parseFloat(value);
@@ -185,26 +190,27 @@ export default function SettingsScreen() {
               />
             </View>
 
-            <View style={styles.divider} />
+            <View className="h-px bg-sky-100 mx-4" />
 
-            <View style={styles.settingRow}>
-              <Text style={styles.settingLabel}>Gender</Text>
-              <View style={styles.genderButtons}>
+            <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+              <Text className="text-base font-semibold text-slate-800">
+                Gender
+              </Text>
+              <View className="flex-row gap-2">
                 {(["male", "female", "other"] as const).map((gender) => (
                   <Pressable
                     key={gender}
-                    style={[
-                      styles.genderButton,
-                      profile.gender === gender && styles.genderButtonActive,
-                    ]}
+                    className={`px-4 py-2 rounded-lg ${
+                      profile.gender === gender ? "bg-sky-500" : "bg-slate-100"
+                    }`}
                     onPress={() => handleProfileUpdate({ gender })}
                   >
                     <Text
-                      style={[
-                        styles.genderButtonText,
-                        profile.gender === gender &&
-                          styles.genderButtonTextActive,
-                      ]}
+                      className={`text-sm font-semibold ${
+                        profile.gender === gender
+                          ? "text-white"
+                          : "text-slate-500"
+                      }`}
                     >
                       {gender.charAt(0).toUpperCase() + gender.slice(1)}
                     </Text>
@@ -213,11 +219,13 @@ export default function SettingsScreen() {
               </View>
             </View>
 
-            <View style={styles.divider} />
+            <View className="h-px bg-sky-100 mx-4" />
 
-            <View style={styles.settingRow}>
-              <Text style={styles.settingLabel}>Activity Level</Text>
-              <View style={styles.activityButtons}>
+            <View className="p-4 min-h-[60px]">
+              <Text className="text-base font-semibold text-slate-800 mb-3">
+                Activity Level
+              </Text>
+              <View className="flex-col gap-2 w-1/2">
                 {(
                   [
                     "sedentary",
@@ -229,21 +237,21 @@ export default function SettingsScreen() {
                 ).map((level) => (
                   <Pressable
                     key={level}
-                    style={[
-                      styles.activityButton,
-                      profile.activityLevel === level &&
-                        styles.activityButtonActive,
-                    ]}
+                    className={`px-3 py-2 rounded-lg ${
+                      profile.activityLevel === level
+                        ? "bg-sky-500"
+                        : "bg-slate-100"
+                    }`}
                     onPress={() =>
                       handleProfileUpdate({ activityLevel: level })
                     }
                   >
                     <Text
-                      style={[
-                        styles.activityButtonText,
-                        profile.activityLevel === level &&
-                          styles.activityButtonTextActive,
-                      ]}
+                      className={`text-xs font-semibold text-center ${
+                        profile.activityLevel === level
+                          ? "text-white"
+                          : "text-slate-500"
+                      }`}
                     >
                       {level
                         .split("_")
@@ -255,12 +263,14 @@ export default function SettingsScreen() {
               </View>
             </View>
 
-            <View style={styles.divider} />
+            <View className="h-px bg-sky-100 mx-4" />
 
-            <View style={styles.settingRow}>
-              <View style={styles.settingInfo}>
-                <Text style={styles.settingLabel}>Smart Goal Calculation</Text>
-                <Text style={styles.settingDescription}>
+            <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+              <View className="flex-1 mr-3">
+                <Text className="text-base font-semibold text-slate-800 mb-1">
+                  Smart Goal Calculation
+                </Text>
+                <Text className="text-xs text-slate-500">
                   Calculate goal based on your profile, activity, and climate
                 </Text>
               </View>
@@ -276,18 +286,20 @@ export default function SettingsScreen() {
 
         {/* Recommended Settings Section */}
         {Object.keys(recommendedSettings).length > 0 && (
-          <View style={styles.section}>
-            <View style={styles.sectionHeader}>
+          <View className="mb-6">
+            <View className="flex-row items-center gap-2 mb-3">
               <Info size={20} color="#F59E0B" />
-              <Text style={styles.sectionTitle}>Recommended Settings</Text>
+              <Text className="text-lg font-bold text-slate-800">
+                Recommended Settings
+              </Text>
             </View>
-            <View style={styles.settingCard}>
-              <Text style={[styles.settingDescription, { marginBottom: 12 }]}>
+            <View className="bg-white rounded-2xl overflow-hidden shadow-sm p-4">
+              <Text className="text-xs text-slate-500 mb-3">
                 Based on your profile, we recommend these settings:
               </Text>
               {recommendedSettings.reminderFrequency && (
-                <View style={styles.settingRow}>
-                  <Text style={styles.settingLabel}>
+                <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+                  <Text className="text-base font-semibold text-slate-800">
                     Reminder Frequency: {settingsDisplay.frequency}
                   </Text>
                   <Pressable
@@ -298,15 +310,13 @@ export default function SettingsScreen() {
                       })
                     }
                   >
-                    <Text style={{ color: "#0EA5E9", fontWeight: "600" }}>
-                      Apply
-                    </Text>
+                    <Text className="text-sky-500 font-semibold">Apply</Text>
                   </Pressable>
                 </View>
               )}
               {recommendedSettings.climateSensitivity && (
-                <View style={styles.settingRow}>
-                  <Text style={styles.settingLabel}>
+                <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+                  <Text className="text-base font-semibold text-slate-800">
                     Enable Climate Sensitivity
                   </Text>
                   <Pressable
@@ -316,15 +326,13 @@ export default function SettingsScreen() {
                       })
                     }
                   >
-                    <Text style={{ color: "#0EA5E9", fontWeight: "600" }}>
-                      Enable
-                    </Text>
+                    <Text className="text-sky-500 font-semibold">Enable</Text>
                   </Pressable>
                 </View>
               )}
               {recommendedSettings.adaptiveReminders && (
-                <View style={styles.settingRow}>
-                  <Text style={styles.settingLabel}>
+                <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+                  <Text className="text-base font-semibold text-slate-800">
                     Enable Adaptive Reminders
                   </Text>
                   <Pressable
@@ -334,9 +342,7 @@ export default function SettingsScreen() {
                       })
                     }
                   >
-                    <Text style={{ color: "#0EA5E9", fontWeight: "600" }}>
-                      Enable
-                    </Text>
+                    <Text className="text-sky-500 font-semibold">Enable</Text>
                   </Pressable>
                 </View>
               )}
@@ -344,24 +350,21 @@ export default function SettingsScreen() {
           </View>
         )}
 
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
+        <View className="mb-6">
+          <View className="flex-row items-center gap-2 mb-3">
             <SettingsIcon size={20} color="#0EA5E9" />
-            <Text style={styles.sectionTitle}>General Settings</Text>
+            <Text className="text-lg font-bold text-slate-800">
+              General Settings
+            </Text>
           </View>
 
-          <View style={styles.settingCard}>
-            <View style={styles.settingRow}>
-              <View style={{ flex: 1 }}>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 8,
-                    marginBottom: 4,
-                  }}
-                >
-                  <Text style={styles.settingLabel}>Daily Goal (ml)</Text>
+          <View className="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+              <View className="flex-1">
+                <View className="flex-row items-center gap-2 mb-1">
+                  <Text className="text-base font-semibold text-slate-800">
+                    Daily Goal (ml)
+                  </Text>
                   {currentGoal.style === "smart" && (
                     <Sparkles size={16} color="#0EA5E9" />
                   )}
@@ -373,22 +376,18 @@ export default function SettingsScreen() {
                   )}
                 </View>
                 {needsRecalculation && currentGoal.style === "smart" && (
-                  <Text
-                    style={{ fontSize: 12, color: "#F59E0B", marginTop: 4 }}
-                  >
+                  <Text className="text-xs text-amber-600 mt-1">
                     ⚠️ Your profile changed. Recalculate your smart goal?
                   </Text>
                 )}
                 {smartGoalCalculation && currentGoal.style === "smart" && (
-                  <Text
-                    style={{ fontSize: 12, color: "#64748B", marginTop: 4 }}
-                  >
+                  <Text className="text-xs text-slate-500 mt-1">
                     Personalized: {smartGoalCalculation.goal}ml
                   </Text>
                 )}
               </View>
               <TextInput
-                style={styles.input}
+                className="bg-slate-100 rounded-lg px-3 py-2 text-base font-semibold text-slate-800 min-w-[80px] text-right"
                 value={String(dailyGoal.goal)}
                 onChangeText={handleGoalChange}
                 keyboardType="numeric"
@@ -399,59 +398,57 @@ export default function SettingsScreen() {
               currentGoal.style === "smart" &&
               calculateSmartGoal && (
                 <>
-                  <View style={styles.divider} />
+                  <View className="h-px bg-sky-100 mx-4" />
                   <Pressable
-                    style={styles.settingRow}
+                    className="flex-row items-center justify-between p-4 min-h-[60px]"
                     onPress={() => {
                       const calculated = calculateSmartGoal();
                       updateGoal(calculated.goal);
                     }}
                   >
-                    <Text style={[styles.settingLabel, { color: "#0EA5E9" }]}>
+                    <Text className="text-base font-semibold text-sky-500">
                       Recalculate Smart Goal
                     </Text>
                   </Pressable>
                 </>
               )}
 
-            <View style={styles.divider} />
+            <View className="h-px bg-sky-100 mx-4" />
 
-            <View style={styles.settingRow}>
-              <View style={styles.settingInfo}>
-                <Text style={styles.settingLabel}>Unit</Text>
-                <Text style={styles.settingDescription}>
+            <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+              <View className="flex-1 mr-3">
+                <Text className="text-base font-semibold text-slate-800 mb-1">
+                  Unit
+                </Text>
+                <Text className="text-xs text-slate-500">
                   Display measurements in ml or oz
                 </Text>
               </View>
-              <View style={styles.unitButtons}>
+              <View className="flex-row gap-2">
                 <Pressable
-                  style={[
-                    styles.unitButton,
-                    settings.unit === "ml" && styles.unitButtonActive,
-                  ]}
+                  className={`px-5 py-2 rounded-lg ${
+                    settings.unit === "ml" ? "bg-sky-500" : "bg-slate-100"
+                  }`}
                   onPress={() => handleSettingsUpdate({ unit: "ml" })}
                 >
                   <Text
-                    style={[
-                      styles.unitButtonText,
-                      settings.unit === "ml" && styles.unitButtonTextActive,
-                    ]}
+                    className={`text-sm font-semibold ${
+                      settings.unit === "ml" ? "text-white" : "text-slate-500"
+                    }`}
                   >
                     ml
                   </Text>
                 </Pressable>
                 <Pressable
-                  style={[
-                    styles.unitButton,
-                    settings.unit === "oz" && styles.unitButtonActive,
-                  ]}
+                  className={`px-5 py-2 rounded-lg ${
+                    settings.unit === "oz" ? "bg-sky-500" : "bg-slate-100"
+                  }`}
                   onPress={() => handleSettingsUpdate({ unit: "oz" })}
                 >
                   <Text
-                    style={[
-                      styles.unitButtonText,
-                      settings.unit === "oz" && styles.unitButtonTextActive,
-                    ]}
+                    className={`text-sm font-semibold ${
+                      settings.unit === "oz" ? "text-white" : "text-slate-500"
+                    }`}
                   >
                     oz
                   </Text>
@@ -459,12 +456,14 @@ export default function SettingsScreen() {
               </View>
             </View>
 
-            <View style={styles.divider} />
+            <View className="h-px bg-sky-100 mx-4" />
 
-            <View style={styles.settingRow}>
-              <View style={styles.settingInfo}>
-                <Text style={styles.settingLabel}>Dark Mode</Text>
-                <Text style={styles.settingDescription}>Coming soon</Text>
+            <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+              <View className="flex-1 mr-3">
+                <Text className="text-base font-semibold text-slate-800 mb-1">
+                  Dark Mode
+                </Text>
+                <Text className="text-xs text-slate-500">Coming soon</Text>
               </View>
               <Switch
                 value={settings.darkMode}
@@ -477,15 +476,17 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
+        <View className="mb-6">
+          <View className="flex-row items-center gap-2 mb-3">
             <Bell size={20} color="#0EA5E9" />
-            <Text style={styles.sectionTitle}>Reminders</Text>
+            <Text className="text-lg font-bold text-slate-800">Reminders</Text>
           </View>
 
-          <View style={styles.settingCard}>
-            <View style={styles.settingRow}>
-              <Text style={styles.settingLabel}>Reminder Sound</Text>
+          <View className="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+              <Text className="text-base font-semibold text-slate-800">
+                Reminder Sound
+              </Text>
               <Switch
                 value={settings.reminderSound}
                 onValueChange={(value) =>
@@ -494,10 +495,12 @@ export default function SettingsScreen() {
               />
             </View>
 
-            <View style={styles.divider} />
+            <View className="h-px bg-sky-100 mx-4" />
 
-            <View style={styles.settingRow}>
-              <Text style={styles.settingLabel}>Vibration</Text>
+            <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+              <Text className="text-base font-semibold text-slate-800">
+                Vibration
+              </Text>
               <Switch
                 value={settings.reminderVibration}
                 onValueChange={(value) =>
@@ -506,12 +509,14 @@ export default function SettingsScreen() {
               />
             </View>
 
-            <View style={styles.divider} />
+            <View className="h-px bg-sky-100 mx-4" />
 
-            <View style={styles.settingRow}>
-              <View style={styles.settingInfo}>
-                <Text style={styles.settingLabel}>Adaptive Reminders</Text>
-                <Text style={styles.settingDescription}>
+            <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+              <View className="flex-1 mr-3">
+                <Text className="text-base font-semibold text-slate-800 mb-1">
+                  Adaptive Reminders
+                </Text>
+                <Text className="text-xs text-slate-500">
                   {isPremium ? "Smart reminder timing" : "🔒 Premium Feature"}
                 </Text>
               </View>
@@ -528,17 +533,19 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
+        <View className="mb-6">
+          <View className="flex-row items-center gap-2 mb-3">
             <Shield size={20} color="#0EA5E9" />
-            <Text style={styles.sectionTitle}>Privacy</Text>
+            <Text className="text-lg font-bold text-slate-800">Privacy</Text>
           </View>
 
-          <View style={styles.settingCard}>
-            <View style={styles.settingRow}>
-              <View style={styles.settingInfo}>
-                <Text style={styles.settingLabel}>Cloud Sync</Text>
-                <Text style={styles.settingDescription}>
+          <View className="bg-white rounded-2xl overflow-hidden shadow-sm">
+            <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+              <View className="flex-1 mr-3">
+                <Text className="text-base font-semibold text-slate-800 mb-1">
+                  Cloud Sync
+                </Text>
+                <Text className="text-xs text-slate-500">
                   {isPremium
                     ? "Sync data across devices"
                     : "🔒 Premium Feature"}
@@ -555,12 +562,14 @@ export default function SettingsScreen() {
               />
             </View>
 
-            <View style={styles.divider} />
+            <View className="h-px bg-sky-100 mx-4" />
 
-            <View style={styles.settingRow}>
-              <View style={styles.settingInfo}>
-                <Text style={styles.settingLabel}>Data Collection</Text>
-                <Text style={styles.settingDescription}>
+            <View className="flex-row items-center justify-between p-4 min-h-[60px]">
+              <View className="flex-1 mr-3">
+                <Text className="text-base font-semibold text-slate-800 mb-1">
+                  Data Collection
+                </Text>
+                <Text className="text-xs text-slate-500">
                   Help improve the app
                 </Text>
               </View>
@@ -574,224 +583,37 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
+        <View className="mb-6">
+          <View className="flex-row items-center gap-2 mb-3">
             <CreditCard size={20} color="#0EA5E9" />
-            <Text style={styles.sectionTitle}>Subscription</Text>
+            <Text className="text-lg font-bold text-slate-800">
+              Subscription
+            </Text>
           </View>
 
-          <View style={styles.settingCard}>
+          <View className="bg-white rounded-2xl overflow-hidden shadow-sm">
             <Pressable
-              style={styles.settingRow}
+              className="flex-row items-center justify-between p-4 min-h-[60px]"
               onPress={() => navigation.navigate("ManageSubscription")}
             >
-              <View style={styles.settingInfo}>
-                <Text style={styles.settingLabel}>Manage Subscriptions</Text>
-                <Text style={styles.settingDescription}>
+              <View className="flex-1 mr-3">
+                <Text className="text-base font-semibold text-slate-800 mb-1">
+                  Manage Subscriptions
+                </Text>
+                <Text className="text-xs text-slate-500">
                   View subscription details, cancel, or resubscribe
                 </Text>
               </View>
-              <Text style={{ color: "#0EA5E9", fontWeight: "600" }}>
-                {">"}
-              </Text>
+              <Text className="text-sky-500 font-semibold">{">"}</Text>
             </Pressable>
           </View>
         </View>
 
-        <View style={styles.footer}>
+        <View className="flex-row items-center justify-center gap-2 py-5">
           <Info size={16} color="#94A3B8" />
-          <Text style={styles.footerText}>Water Tracker v1.0.0</Text>
+          <Text className="text-sm text-slate-400">Water Tracker v1.0.0</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F0F9FF",
-  },
-  content: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  premiumCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    backgroundColor: "#FEF3C7",
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
-  },
-  premiumInfo: {
-    flex: 1,
-  },
-  premiumTitle: {
-    fontSize: 18,
-    fontWeight: "700" as const,
-    color: "#92400E",
-    marginBottom: 4,
-  },
-  premiumSubtitle: {
-    fontSize: 14,
-    color: "#92400E",
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "700" as const,
-    color: "#0C4A6E",
-  },
-  settingCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
-    overflow: "hidden",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  settingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 16,
-    minHeight: 60,
-  },
-  settingInfo: {
-    flex: 1,
-    marginRight: 12,
-  },
-  settingLabel: {
-    fontSize: 16,
-    fontWeight: "600" as const,
-    color: "#0C4A6E",
-    marginBottom: 2,
-  },
-  settingDescription: {
-    fontSize: 12,
-    color: "#64748B",
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#E0F2FE",
-    marginHorizontal: 16,
-  },
-  input: {
-    backgroundColor: "#F1F5F9",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 16,
-    fontWeight: "600" as const,
-    color: "#0C4A6E",
-    minWidth: 80,
-    textAlign: "right",
-  },
-  genderButtons: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  genderButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: "#F1F5F9",
-  },
-  genderButtonActive: {
-    backgroundColor: "#0EA5E9",
-  },
-  genderButtonText: {
-    fontSize: 14,
-    fontWeight: "600" as const,
-    color: "#64748B",
-  },
-  genderButtonTextActive: {
-    color: "#FFFFFF",
-  },
-  activityButtons: {
-    flexDirection: "column",
-    gap: 8,
-    width: "50%",
-  },
-  activityButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: "#F1F5F9",
-  },
-  activityButtonActive: {
-    backgroundColor: "#0EA5E9",
-  },
-  activityButtonText: {
-    fontSize: 12,
-    fontWeight: "600" as const,
-    color: "#64748B",
-    textAlign: "center",
-  },
-  activityButtonTextActive: {
-    color: "#FFFFFF",
-  },
-  unitButtons: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  unitButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 8,
-    backgroundColor: "#F1F5F9",
-  },
-  unitButtonActive: {
-    backgroundColor: "#0EA5E9",
-  },
-  unitButtonText: {
-    fontSize: 14,
-    fontWeight: "600" as const,
-    color: "#64748B",
-  },
-  unitButtonTextActive: {
-    color: "#FFFFFF",
-  },
-  footer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    paddingVertical: 20,
-  },
-  footerText: {
-    fontSize: 14,
-    color: "#94A3B8",
-  },
-  premiumActiveCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    backgroundColor: "#DCFCE7",
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
-  },
-});
