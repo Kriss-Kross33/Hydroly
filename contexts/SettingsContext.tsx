@@ -9,6 +9,10 @@ import {
   PremiumStatus,
   ActivityLevel,
 } from "@/types/user";
+import {
+  initializeReminderChannels,
+  scheduleReminders,
+} from "@/src/services/reminderService";
 
 const SETTINGS_KEY = "@water_tracker_settings";
 const PROFILE_KEY = "@water_tracker_profile";
@@ -137,10 +141,55 @@ export const [SettingsProvider, useSettings] = createContextHook(() => {
     }
   }, [premiumQuery.data]);
 
-  const updateSettings = (updates: Partial<AppSettings>) => {
+  // Initialize reminder channels and schedule reminders when settings load
+  useEffect(() => {
+    async function initializeReminders() {
+      if (!settingsQuery.isLoading && settings) {
+        try {
+          // Initialize channels first
+          await initializeReminderChannels();
+
+          // Schedule reminders based on current settings
+          await scheduleReminders(settings);
+        } catch (error) {
+          console.error(
+            "[SettingsContext] Error initializing reminders:",
+            error
+          );
+        }
+      }
+    }
+
+    initializeReminders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settingsQuery.isLoading, settings?.reminderFrequency]);
+
+  const updateSettings = async (updates: Partial<AppSettings>) => {
     const updated = { ...settings, ...updates };
     setSettings(updated);
     saveSettingsMutation.mutate(updated);
+
+    // Update reminders if reminder-related settings changed
+    const reminderKeys: (keyof AppSettings)[] = [
+      "reminderFrequency",
+      "customReminderInterval",
+      "reminderSound",
+      "reminderVibration",
+      "quietHoursStart",
+      "quietHoursEnd",
+    ];
+
+    const hasReminderChanges = Object.keys(updates).some((key) =>
+      reminderKeys.includes(key as keyof AppSettings)
+    );
+
+    if (hasReminderChanges) {
+      // Schedule reminders with updated settings
+      const finalSettings = { ...settings, ...updates };
+      scheduleReminders(finalSettings).catch((error) => {
+        console.error("[SettingsContext] Error updating reminders:", error);
+      });
+    }
   };
 
   const updateProfile = (updates: Partial<UserProfile>) => {
@@ -161,33 +210,6 @@ export const [SettingsProvider, useSettings] = createContextHook(() => {
     savePremiumMutation.mutate(updated);
   };
 
-  const calculateSmartGoal = (): number => {
-    if (!profile.useSmartGoal) return 2500;
-
-    let baseGoal = 2000;
-
-    if (profile.gender === "male") baseGoal = 2500;
-    else if (profile.gender === "female") baseGoal = 2000;
-
-    baseGoal += (profile.weight - 70) * 35;
-
-    const activityMultipliers: Record<ActivityLevel, number> = {
-      sedentary: 1.0,
-      light: 1.1,
-      moderate: 1.2,
-      active: 1.3,
-      very_active: 1.5,
-    };
-
-    baseGoal *= activityMultipliers[profile.activityLevel];
-
-    if (settings.climateSensitivity && profile.climate === "hot") {
-      baseGoal *= 1.2;
-    }
-
-    return Math.round(baseGoal);
-  };
-
   return {
     settings,
     profile,
@@ -197,7 +219,6 @@ export const [SettingsProvider, useSettings] = createContextHook(() => {
     updateProfile,
     updatePrivacy,
     updatePremium,
-    calculateSmartGoal,
     isLoading:
       settingsQuery.isLoading ||
       profileQuery.isLoading ||
