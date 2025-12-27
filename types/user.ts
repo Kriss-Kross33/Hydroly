@@ -1,6 +1,6 @@
 export type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
 export type Gender = 'male' | 'female' | 'other';
-export type ReminderFrequency = 'hourly' | 'every_2_hours' | 'every_3_hours' | 'custom';
+export type ReminderFrequency = 'hourly' | 'every_2_hours' | 'every_3_hours' | 'custom' | 'never';
 export type Unit = 'ml' | 'oz';
 
 export interface UserProfile {

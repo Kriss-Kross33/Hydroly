@@ -1,4 +1,4 @@
-import { LocalStorageApi } from "@farm-slate-mobile/local-storage-api";
+import { LocalStorageApi } from "@hydroly/local-storage-api";
 import { Realm } from "realm";
 
 export interface RealmRepositoryConfig<T extends Record<string, any>> {
@@ -42,7 +42,7 @@ export interface SyncHandlers<T extends Record<string, any>> {
  * - Values are stored as JSON strings for compatibility with LocalStorageApi.
  */
 export class RealmRepository<
-  T extends Record<string, any>
+  T extends Record<string, any>,
 > extends LocalStorageApi {
   private readonly objectType: string;
   private readonly idKey: string;
@@ -109,7 +109,7 @@ export class RealmRepository<
   async getAllKeys(): Promise<string[]> {
     const realm = await this.getRealm();
     const all = realm.objects<T & Realm.Object>(this.objectType);
-    return all.map((obj) => String((obj as any)[this.idKey]));
+    return all.map((obj: T & Realm.Object) => String((obj as any)[this.idKey]));
   }
 
   // ---- Typed helpers on top of the string-based API ----
@@ -153,7 +153,7 @@ export class RealmRepository<
   async getAllObjects(): Promise<T[]> {
     const realm = await this.getRealm();
     const all = realm.objects<T & Realm.Object>(this.objectType);
-    return all.map((obj) => this.detach(obj));
+    return all.map((obj: T & Realm.Object) => this.detach(obj));
   }
 
   /**
