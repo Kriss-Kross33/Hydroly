@@ -131,9 +131,7 @@ export default function ManageSubscriptionScreen() {
       <View className="flex-row bg-white border-b border-slate-200">
         <Pressable
           className={`flex-1 py-4 items-center border-b-2 ${
-            activeTab === "current"
-              ? "border-sky-500"
-              : "border-transparent"
+            activeTab === "current" ? "border-sky-500" : "border-transparent"
           }`}
           onPress={() => setActiveTab("current")}
         >
@@ -147,9 +145,7 @@ export default function ManageSubscriptionScreen() {
         </Pressable>
         <Pressable
           className={`flex-1 py-4 items-center border-b-2 ${
-            activeTab === "history"
-              ? "border-sky-500"
-              : "border-transparent"
+            activeTab === "history" ? "border-sky-500" : "border-transparent"
           }`}
           onPress={() => setActiveTab("history")}
         >
@@ -212,13 +208,13 @@ export default function ManageSubscriptionScreen() {
                       <View className="flex-row items-center gap-3">
                         <Calendar size={20} color="#64748B" />
                         <Text className="text-base font-semibold text-slate-700">
-                          {subscription.willRenew
-                            ? "Renews On"
-                            : "Expires On"}
+                          {subscription.willRenew ? "Renews On" : "Expires On"}
                         </Text>
                       </View>
                       <Text className="text-base font-bold text-slate-800">
-                        {formatDate(activeEntitlement.expirationDate)}
+                        {formatDate(
+                          new Date(activeEntitlement.expirationDate || "")
+                        )}
                       </Text>
                     </View>
 
@@ -248,7 +244,8 @@ export default function ManageSubscriptionScreen() {
                       <ExternalLink size={20} color="#0EA5E9" />
                       <View className="flex-1">
                         <Text className="text-base font-semibold text-slate-800">
-                          Manage in {Platform.OS === "ios" ? "App Store" : "Play Store"}
+                          Manage in{" "}
+                          {Platform.OS === "ios" ? "App Store" : "Play Store"}
                         </Text>
                         <Text className="text-sm text-slate-500">
                           Cancel or modify your subscription
@@ -288,7 +285,7 @@ export default function ManageSubscriptionScreen() {
                         No Active Subscription
                       </Text>
                       <Text className="text-sm text-slate-500">
-                        You don't have an active subscription
+                        You don&apos;t have an active subscription
                       </Text>
                     </View>
                   </View>
@@ -337,8 +334,9 @@ export default function ManageSubscriptionScreen() {
               <View>
                 {allEntitlements.map((entitlement, index) => {
                   const isActive =
-                    customerInfo?.entitlements.active[entitlement.identifier] !==
-                    undefined;
+                    customerInfo?.entitlements.active[
+                      entitlement.identifier
+                    ] !== undefined;
                   const isExpired =
                     entitlement.expirationDate &&
                     new Date(entitlement.expirationDate) < new Date();
@@ -397,7 +395,9 @@ export default function ManageSubscriptionScreen() {
                               {isActive ? "Renews On" : "Expired On"}
                             </Text>
                             <Text className="text-sm font-semibold text-slate-800">
-                              {formatDate(entitlement.expirationDate)}
+                              {formatDate(
+                                new Date(entitlement.expirationDate || "")
+                              )}
                             </Text>
                           </View>
                         )}
@@ -424,7 +424,7 @@ export default function ManageSubscriptionScreen() {
                   No Subscription History
                 </Text>
                 <Text className="text-sm text-slate-500 text-center">
-                  You haven't had any subscriptions yet
+                  You haven&apos;t had any subscriptions yet
                 </Text>
               </View>
             )}
@@ -434,4 +434,3 @@ export default function ManageSubscriptionScreen() {
     </SafeAreaView>
   );
 }
-
