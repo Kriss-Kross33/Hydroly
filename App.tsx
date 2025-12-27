@@ -33,6 +33,10 @@ function AppContent() {
         // Note: RevenueCat initialization is handled by RevenueCatProvider
         // No need to initialize here to avoid duplicate initialization
 
+        // Note: If you see "test_store" deserialization errors in Android logs,
+        // this is a known RevenueCat Android SDK issue with test store API keys.
+        // It's harmless and doesn't affect functionality. Won't appear in production.
+
         // Wait 2 seconds for splash screen
         await new Promise((resolve) => setTimeout(resolve, 2000));
         setAppReady(true);
