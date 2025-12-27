@@ -2,8 +2,9 @@
  * Login Section Component
  *
  * Optional login UI for Settings screen
- * - Shows login prompt for anonymous users
+ * - Shows login prompt for anonymous Pro users only (cloud backup is Pro feature)
  * - Shows account info for authenticated users
+ * - Hidden for anonymous free users
  * - Value-driven: emphasizes cloud backup benefit
  */
 
@@ -105,21 +106,19 @@ export function LoginSection() {
     );
   };
 
-  // Show login prompt for anonymous users (especially Pro users)
-  if (isAnonymous) {
+  // Show login prompt only for anonymous Pro users (cloud backup is a Pro feature)
+  if (isAnonymous && isPremium) {
     return (
       <View className="mb-6">
         <View className="bg-white rounded-2xl p-4 shadow-sm">
           <View className="flex-row items-center mb-3">
             <Cloud size={24} color="#3B82F6" />
             <Text className="text-lg font-semibold text-gray-900 ml-2">
-              {isPremium ? "Backup Your Data" : "Sign In to Backup"}
+              Backup Your Data
             </Text>
           </View>
           <Text className="text-sm text-gray-600 mb-4">
-            {isPremium
-              ? "Sign in to enable cloud backup and restore your data on any device."
-              : "Create an account to backup your hydration data and access it across devices."}
+            Sign in to enable cloud backup and restore your data on any device.
           </Text>
           <Pressable
             onPress={handleLoginPress}
@@ -152,6 +151,11 @@ export function LoginSection() {
         />
       </View>
     );
+  }
+
+  // Don't show anything for anonymous free users (cloud backup is Pro-only)
+  if (isAnonymous && !isPremium) {
+    return null;
   }
 
   // Show account info for authenticated users
