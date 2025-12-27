@@ -96,9 +96,11 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@babel/plugin-transform-react-jsx": "^7.25.0",
     "@expo/cli": "~54.0.0",
     "@expo/ngrok": "^4.1.0",
     "@types/react": "~19.1.10",
+    "babel-preset-expo": "~11.0.0",
     "eslint": "^9.31.0",
     "eslint-config-expo": "~10.0.0",
     "prettier": "^3.4.1",
