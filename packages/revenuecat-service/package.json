@@ -1,0 +1,11 @@
+{
+  "name": "@hydroly/revenuecat-service",
+  "version": "1.0.0",
+  "description": "RevenueCat service package for subscription management",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {
+    "react-native-purchases": "^8.0.0"
+  }
+}
+
