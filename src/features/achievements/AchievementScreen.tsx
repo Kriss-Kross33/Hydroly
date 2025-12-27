@@ -117,8 +117,8 @@ export default function AchievementsScreen() {
                 {display.current}
               </Text>
               {isAtRisk && (
-                <Text className="text-xs text-red-600 font-semibold mt-1">
-                  ⚠️ Your streak is at risk!
+                <Text className="text-xs text-orange-700 font-semibold mt-1">
+                  💧 Keep your streak going
                 </Text>
               )}
               {streakMilestones.next && (
