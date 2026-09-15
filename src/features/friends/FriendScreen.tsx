@@ -29,7 +29,7 @@ import { useFriends } from "@/contexts/FriendsContext";
 import { LeaderboardEntry } from "@/types/friend";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../../../RootStack";
+import { RootStackParamList } from "@/types/navigation";
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 

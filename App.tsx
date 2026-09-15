@@ -5,6 +5,13 @@ import { withStallion } from "react-native-stallion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import {
+  useFonts,
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_600SemiBold,
+  DMSans_700Bold,
+} from "@expo-google-fonts/dm-sans";
 import { WaterProvider, useWater } from "@/contexts/WaterContext";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { AchievementsProvider } from "@/contexts/AchievementsContext";
@@ -24,12 +31,21 @@ const queryClient = new QueryClient();
 function AppContent() {
   const { hasCompletedOnboarding, isLoading } = useWater();
   const [appReady, setAppReady] = useState(false);
+  const [forceShow, setForceShow] = useState(false);
+  const [fontsLoaded] = useFonts({
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_600SemiBold,
+    DMSans_700Bold,
+  });
 
   useEffect(() => {
     async function initializeApp() {
       try {
+        console.log("[App] Starting initialization...");
         // Initialize reminder notification channels
         await initializeReminderChannels();
+        console.log("[App] Reminder channels initialized");
         // Note: RevenueCat initialization is handled by RevenueCatProvider
         // No need to initialize here to avoid duplicate initialization
 
@@ -37,34 +53,64 @@ function AppContent() {
         // this is a known RevenueCat Android SDK issue with test store API keys.
         // It's harmless and doesn't affect functionality. Won't appear in production.
 
-        // Wait 2 seconds for splash screen
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        // Wait briefly for splash screen
+        console.log("[App] Waiting for splash...");
+        await new Promise((resolve) => setTimeout(resolve, 800));
+        console.log("[App] Setting appReady to true");
         setAppReady(true);
       } catch (error) {
-        console.error("Error initializing app:", error);
+        console.error("[App] Error initializing app:", error);
+        // Still set appReady even if there's an error to prevent app from being stuck
+        setAppReady(true);
       }
     }
 
-    initializeApp();
+    // Also set a safety timeout to ensure appReady is set
+    const safetyTimeout = setTimeout(() => {
+      console.log("[App] Safety timeout: forcing appReady to true");
+      setAppReady(true);
+    }, 3000);
+
+    initializeApp().finally(() => {
+      clearTimeout(safetyTimeout);
+    });
   }, []);
 
-  // Hide splash screen when ready (after 5 seconds and data is loaded)
+  // Timeout fallback: force show app after 5 seconds if still loading
   useEffect(() => {
-    if (appReady && !isLoading) {
+    const timeout = setTimeout(() => {
+      console.log("[App] Timeout reached, forcing app to show");
+      setForceShow(true);
+      SplashScreen.hideAsync();
+    }, 5000);
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Hide splash screen when ready
+  useEffect(() => {
+    console.log("[App] State check:", { appReady, isLoading, forceShow, fontsLoaded });
+    if ((appReady && fontsLoaded && !isLoading) || forceShow) {
+      console.log("[App] Hiding splash screen");
       SplashScreen.hideAsync();
     }
-  }, [appReady, isLoading]);
+  }, [appReady, isLoading, forceShow, fontsLoaded]);
 
   // Don't render NavigationContainer until ready to prevent showing wrong screen
-  if (!appReady || isLoading) {
+  // Only render when appReady is true (forceShow will ensure appReady is set via safety timeout)
+  if ((!appReady || !fontsLoaded) && !forceShow) {
+    console.log("[App] Waiting for appReady/fonts...");
     return null;
   }
 
-  return (
-    <NavigationContainer>
-      <RootStack hasCompletedOnboarding={hasCompletedOnboarding} />
-    </NavigationContainer>
-  );
+  if (isLoading && !forceShow) {
+    console.log("[App] Still loading, waiting...");
+    return null;
+  }
+
+  console.log("[App] Rendering app with NavigationContainer");
+
+  return <RootStack hasCompletedOnboarding={hasCompletedOnboarding} />;
 }
 
 export function App() {
@@ -79,7 +125,9 @@ export function App() {
                   <WaterProvider>
                     <FriendsProvider>
                       <GestureHandlerRootView style={{ flex: 1 }}>
-                        <AppContent />
+                        <NavigationContainer>
+                          <AppContent />
+                        </NavigationContainer>
                       </GestureHandlerRootView>
                     </FriendsProvider>
                   </WaterProvider>

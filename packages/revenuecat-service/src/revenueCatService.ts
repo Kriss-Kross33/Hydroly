@@ -584,6 +584,27 @@ class RevenueCatService {
   }
 
   /**
+   * Whether Purchases.configure() has completed successfully
+   */
+  getInitialized(): boolean {
+    return this.isInitialized;
+  }
+
+  /**
+   * Poll until initialized or timeout. Returns false if still not ready.
+   */
+  async waitUntilReady(
+    timeoutMs = 9000,
+    intervalMs = 250
+  ): Promise<boolean> {
+    const deadline = Date.now() + timeoutMs;
+    while (!this.isInitialized && Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    }
+    return this.isInitialized;
+  }
+
+  /**
    * Ensure RevenueCat is initialized
    */
   private ensureInitialized(): void {

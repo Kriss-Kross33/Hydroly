@@ -4,15 +4,8 @@ export type RootStackParamList = {
   OnboardingGoals: undefined;
   MainTabs: undefined;
   Paywall: undefined;
-  //   Friends: undefined;
-  //   Achievements: undefined;
-  //   Settings: undefined;
-  //   Stats: undefined;
-  //   History: undefined;
-  //   Track: undefined;
-  //   Friends: undefined;
-  //   Achievements: undefined;
-  //   Settings: undefined;
-  //   Stats: undefined;
-  //   History: undefined;
+  ManageSubscription: undefined;
+  Achievements: undefined;
+  Tabs: undefined;
 };
+

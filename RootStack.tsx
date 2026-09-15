@@ -3,17 +3,10 @@ import React from "react";
 import OnboardingScreen from "./src/features/onboarding/OnboardingScreen";
 import OnboardingGoalsScreen from "./src/features/goals-setup/OnboardingGoalsSetup";
 import PaywallScreen from "./src/features/paywall/PaywallScreen";
-import ManageSubscriptionScreen from "./src/features/settings/ManageSubscriptionScreen";
+import AchievementsScreen from "./src/features/achievements/AchievementScreen";
 import CustomBottomTabs from "./src/navigation/BottomTabNavigation";
-
-export type RootStackParamList = {
-  OnboardingNav: undefined;
-  Onboarding: undefined;
-  OnboardingGoals: undefined;
-  MainTabs: undefined;
-  Paywall: undefined;
-  ManageSubscription: undefined;
-};
+import ManageSubscriptionScreenWrapper from "./src/features/settings/ManageSubscriptionScreenWrapper";
+import { RootStackParamList } from "./types/navigation";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -27,7 +20,7 @@ export function RootStack({
       {!hasCompletedOnboarding ? (
         <Stack.Screen name="OnboardingNav" component={OnboardingNavigator} />
       ) : (
-        <Stack.Screen name="MainTabs" component={CustomBottomTabs} />
+        <Stack.Screen name="MainTabs" component={MainNavigator} />
       )}
       <Stack.Screen
         name="Paywall"
@@ -37,17 +30,32 @@ export function RootStack({
           headerShown: false,
         }}
       />
+    </Stack.Navigator>
+  );
+}
+
+const MainNavigator = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Tabs" component={CustomBottomTabs} />
       <Stack.Screen
         name="ManageSubscription"
-        component={ManageSubscriptionScreen}
+        component={ManageSubscriptionScreenWrapper}
         options={{
           presentation: "modal",
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="Achievements"
+        component={AchievementsScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack.Navigator>
   );
-}
+};
 
 const OnboardingNavigator = () => {
   return (

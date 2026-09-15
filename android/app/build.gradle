@@ -2,13 +2,13 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
-// Load environment-specific .env file based on build variant
+// Load environment-specific .env file based on build variant / ENVFILE
+// Dev always uses staging config per product requirement.
 def getEnvFile() {
-    def envFile = ".env"
     if (project.hasProperty('ENVFILE')) {
-        envFile = project.getProperty('ENVFILE')
+        return project.getProperty('ENVFILE')
     }
-    return envFile
+    return ".env.staging"
 }
 
 // Apply react-native-config with the correct env file
@@ -107,7 +107,7 @@ def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 android {
     ndkVersion rootProject.ext.ndkVersion
 
-    compileSdk rootProject.ext.compileSdkVersion
+    compileSdk 36
 
     namespace 'com.hydroly.app'
     flavorDimensions "environment"
@@ -115,8 +115,8 @@ android {
     defaultConfig {
         applicationId 'com.hydroly.app'
         minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
+        targetSdkVersion 36
+        versionCode 4
         versionName "1.0.0"
         
         // React Native release channel for new architecture (used in MainApplication.kt)
@@ -144,8 +144,8 @@ android {
             versionNameSuffix "-dev"
             resValue "string", "app_name", "Hydroly [DEV]"
             buildConfigField "String", "ENVIRONMENT", "\"development\""
-            // Set environment file for react-native-config
-            project.ext.envConfigFiles = [".env.development"]
+            // Dev builds always use staging RevenueCat / backend config
+            project.ext.envConfigFiles = [".env.staging"]
             project.env.each { k, v ->
                 buildConfigField "String", k, "\"$v\""
             }
@@ -209,11 +209,8 @@ android {
         }
         release {
             signingConfig signingConfigs.release
-            // Disable code shrinking/minification for now to keep the
-            // production APK running correctly. Once Proguard/R8 rules
-            // are fully tuned, these can be turned back on.
-            minifyEnabled false
-            shrinkResources false
+            minifyEnabled true
+            shrinkResources enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             
             ndk {

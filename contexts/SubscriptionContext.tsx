@@ -14,6 +14,7 @@ import { revenueCatService } from "@hydroly/revenuecat-service";
 import { PurchasesPackage } from "react-native-purchases";
 import { Platform } from "react-native";
 import { getRevenueCatConfig } from "@/src/config/revenuecat";
+import { ensureRevenueCatReady } from "@/src/utils/ensureRevenueCatReady";
 import NetInfo from "@react-native-community/netinfo";
 
 const SUBSCRIPTION_KEY = "@water_tracker_subscription";
@@ -225,32 +226,18 @@ export const [SubscriptionProvider, useSubscription] = createContextHook(() => {
           return;
         }
 
-        // Wait a bit to ensure RevenueCat is initialized by RevenueCatProvider
-        // RevenueCatProvider initializes asynchronously, so we need to retry if not ready
-        let retries = 0;
-        const maxRetries = 5;
-        let status;
-
-        while (retries < maxRetries) {
-          try {
-            status = await revenueCatService.checkSubscriptionStatus();
-            break; // Success, exit retry loop
-          } catch (error: any) {
-            if (error?.message?.includes("not initialized")) {
-              retries++;
-              if (retries < maxRetries) {
-                // Wait 500ms before retrying
-                await new Promise((resolve) => setTimeout(resolve, 500));
-                continue;
-              }
-            }
-            // If it's a different error or max retries reached, throw
-            throw error;
-          }
+        // Wait for / lazily run RevenueCat initialize (auth + SDK can take a few seconds)
+        const ready = await ensureRevenueCatReady();
+        if (!ready) {
+          console.warn(
+            "[SubscriptionContext] RevenueCat not ready yet; using local subscription state"
+          );
+          return;
         }
 
+        const status = await revenueCatService.checkSubscriptionStatus();
+
         if (!status) {
-          // If we couldn't get status after retries, fallback to local storage
           return;
         }
 

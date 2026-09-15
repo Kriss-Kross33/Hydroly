@@ -1,8 +1,7 @@
 /**
  * RevenueCat Provider
  *
- * Initializes RevenueCat on app launch with anonymous Firebase UID
- * Syncs subscription status with SubscriptionContext
+ * Initializes RevenueCat early (like Macro Meals), then links Firebase UID when ready.
  */
 
 import React, { useEffect, useState } from "react";
@@ -19,69 +18,75 @@ interface RevenueCatProviderProps {
 
 export function RevenueCatProvider({ children }: RevenueCatProviderProps) {
   const { user } = useAuth();
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isConfigured, setIsConfigured] = useState(false);
 
+  // Early configure — do not wait for auth (matches Macro Meals App.tsx bootstrap)
   useEffect(() => {
     async function initializeRevenueCat() {
-      // Wait for Firebase Auth to create anonymous user
-      if (!user) {
-        return;
-      }
-
-      // Check if RevenueCat is configured
       if (!isRevenueCatConfigured()) {
         console.warn(
-          "[RevenueCatProvider] RevenueCat not configured. Skipping initialization."
+          "[RevenueCatProvider] RevenueCat not configured (missing API key in ENVFILE). Skipping initialization."
         );
         return;
       }
 
-      // Don't initialize twice
-      if (isInitialized) {
+      if (
+        typeof revenueCatService.getInitialized === "function" &&
+        revenueCatService.getInitialized()
+      ) {
+        setIsConfigured(true);
         return;
       }
 
       try {
         const config = getRevenueCatConfig();
-
-        // Initialize RevenueCat with anonymous Firebase UID
         await revenueCatService.initialize(
           config,
-          user.uid, // Use Firebase UID as RevenueCat App User ID
-          __DEV__ // Enable debug mode in development
+          undefined, // identify after auth via logIn
+          __DEV__
         );
-
-        setIsInitialized(true);
-        console.log(
-          "[RevenueCatProvider] ✅ RevenueCat initialized with UID:",
-          user.uid
-        );
-
-        // Check subscription status and sync
-        // This will be handled by SubscriptionContext
+        setIsConfigured(true);
+        console.log("[RevenueCatProvider] ✅ RevenueCat configured");
       } catch (error) {
         console.error(
           "[RevenueCatProvider] ❌ Failed to initialize RevenueCat:",
           error
         );
-        // Don't block app if RevenueCat fails
       }
     }
 
     initializeRevenueCat();
-  }, [user, isInitialized]);
+  }, []);
 
-  // Re-initialize if user changes (e.g., anonymous → authenticated)
+  // Link Firebase UID once auth is ready
   useEffect(() => {
-    if (user && isInitialized) {
-      // If user logged in, RevenueCat identity should already be linked via AuthContext
-      // But we can sync purchases here
-      revenueCatService.syncPurchases().catch((error) => {
-        console.error("[RevenueCatProvider] Error syncing purchases:", error);
+    if (!user?.uid || !isConfigured) return;
+
+    revenueCatService
+      .logIn(user.uid)
+      .then(() => {
+        console.log(
+          "[RevenueCatProvider] ✅ Linked RevenueCat to UID:",
+          user.uid
+        );
+      })
+      .catch((error) => {
+        console.error(
+          "[RevenueCatProvider] Error linking RevenueCat user:",
+          error
+        );
       });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.isAnonymous, isInitialized]);
+  }, [user?.uid, isConfigured]);
+
+  // Soft sync when anonymous → authenticated
+  useEffect(() => {
+    if (!user || !isConfigured) return;
+    if (user.isAnonymous) return;
+
+    revenueCatService.syncPurchases().catch((error) => {
+      console.error("[RevenueCatProvider] Error syncing purchases:", error);
+    });
+  }, [user?.isAnonymous, isConfigured]);
 
   return <>{children}</>;
 }

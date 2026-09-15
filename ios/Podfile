@@ -21,13 +21,31 @@ ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSou
 ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true' && podfile_properties['newArchEnabled'] != 'false'
 platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 
-# Enable modular headers for Swift pods (required for Firebase and other Swift dependencies)
-use_modular_headers!
+# Use CocoaPods for Firebase (not SPM) with static frameworks — required for
+# FirebaseAuth-Swift.h and react-native-firebase. Do not use use_modular_headers!.
+$RNFirebaseDisableSPM = true
+$RNFirebaseAsStaticFramework = true
+
+# Expo's framework-module patch only activates when this ENV is set.
+if podfile_properties['ios.useFrameworks']
+  ENV['USE_FRAMEWORKS'] ||= podfile_properties['ios.useFrameworks']
+end
 
 prepare_react_native_project!
 
 target 'HydrationTrackerApp' do
   use_expo_modules!
+
+  # RNFB public headers import React-Core; building them as frameworks fails with
+  # "non-modular header inside framework module". Force static library linkage.
+  expo_add_modules_to_patch([
+    'RNFBApp',
+    'RNFBAuth',
+    'RNFBAnalytics',
+    'RNFBCrashlytics',
+    'RNFBMessaging',
+    'RNFBRemoteConfig',
+  ])
 
   if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
     config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
@@ -67,5 +85,11 @@ target 'HydrationTrackerApp' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
+
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+      end
+    end
   end
 end
